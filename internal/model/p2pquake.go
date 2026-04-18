@@ -2,7 +2,7 @@ package model
 
 // BasicData は全メッセージ共通のフィールドです。
 type BasicData struct {
-	ID   string `json:"id"`
+	ID   string `json:"_id"`
 	Code int    `json:"code"`
 	Time string `json:"time"`
 }
