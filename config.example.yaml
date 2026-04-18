@@ -1,0 +1,16 @@
+websocket:
+  url: wss://api.p2pquake.net/v2/ws
+  reconnect_initial_interval: 1s
+  reconnect_max_interval: 60s
+
+filter:
+  notify_codes: [551, 552, 556]
+  min_scale: 30  # 0=全て, 10=震度1以上, 30=震度3以上, 40=震度4以上
+
+notifiers:
+  - type: slack
+    url: https://hooks.slack.com/services/XXX/YYY/ZZZ
+  # - type: slack
+  #   url: https://hooks.slack.com/services/AAA/BBB/CCC  # 別チャンネルも可
+  # - type: discord
+  #   url: https://discord.com/api/webhooks/XXX/YYY
