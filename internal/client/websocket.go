@@ -86,6 +86,7 @@ func (c *Client) connect(ctx context.Context) error {
 		if msgType != websocket.MessageText {
 			continue
 		}
+		slog.Info("WebSocket メッセージを受信しました", "message", string(data))
 		c.handler(data)
 	}
 }
