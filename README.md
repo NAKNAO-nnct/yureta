@@ -63,7 +63,19 @@ go build -trimpath -ldflags="-s -w" -o yure-bot ./cmd/bot
 ./yure-bot
 ```
 
-### 4. Docker で実行
+### 4. Docker Compose で実行（推奨）
+
+```bash
+docker compose up -d
+```
+
+ログを確認する場合:
+
+```bash
+docker compose logs -f
+```
+
+### 5. Docker で直接実行
 
 ```bash
 docker build -t yure-bot .

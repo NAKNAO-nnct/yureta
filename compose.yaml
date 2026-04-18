@@ -1,0 +1,16 @@
+services:
+  yure-bot:
+    image: ghcr.io/naknao-nnct/yureta:latest
+    # ローカルビルドを使う場合は上の image をコメントアウトして下を有効にする
+    # build: .
+    restart: unless-stopped
+    volumes:
+      - ./config.yaml:/config.yaml:ro
+    environment:
+      CONFIG_FILE: /config.yaml
+      # LOG_FORMAT: json
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
