@@ -127,9 +127,18 @@ func (h *Handler) formatJMAQuake(data []byte) (string, error) {
 		return "", nil
 	}
 
-	tsunami := eq.DomesticTsunami
-	if tsunami == "None" {
-		tsunami = "なし"
+	tsunamiLabel := map[string]string{
+		"None":         "なし",
+		"Unknown":      "不明",
+		"Checking":     "調査中",
+		"NonEffective": "若干の海面変動",
+		"Watch":        "津波注意報",
+		"Warning":      "津波警報",
+		"MajorWarning": "大津波警報",
+	}
+	tsunami, ok := tsunamiLabel[eq.DomesticTsunami]
+	if !ok {
+		tsunami = eq.DomesticTsunami
 	}
 
 	return fmt.Sprintf(
