@@ -152,15 +152,31 @@ func (h *Handler) formatJMATsunami(data []byte) (string, error) {
 		return "【津波予報】津波予報が解除されました。", nil
 	}
 
-	var areas []string
-	for _, a := range t.Areas {
-		areas = append(areas, fmt.Sprintf("%s (%s)", a.Name, a.Grade))
+	gradeLabel := map[string]string{
+		"MajorWarning": "大津波警報",
+		"Warning":      "津波警報",
+		"Watch":        "津波注意報",
 	}
-	return fmt.Sprintf(
-		"【津波予報】\n発表: %s\n対象区域: %s",
-		t.Issue.Time,
-		strings.Join(areas, ", "),
-	), nil
+	gradeOrder := []string{"MajorWarning", "Warning", "Watch"}
+	gradeAreas := make(map[string][]string)
+	for _, a := range t.Areas {
+		gradeAreas[a.Grade] = append(gradeAreas[a.Grade], a.Name)
+	}
+
+	var lines []string
+	for _, grade := range gradeOrder {
+		names := gradeAreas[grade]
+		if len(names) == 0 {
+			continue
+		}
+		label, ok := gradeLabel[grade]
+		if !ok {
+			label = grade
+		}
+		lines = append(lines, fmt.Sprintf("%s: %s", label, strings.Join(names, "、")))
+	}
+
+	return fmt.Sprintf("【津波予報】\n発表: %s\n%s", t.Issue.Time, strings.Join(lines, "\n")), nil
 }
 
 func (h *Handler) formatEEWDetection(data []byte) (string, error) {
