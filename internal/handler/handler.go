@@ -16,9 +16,10 @@ const deduplicateCacheSize = 200
 
 // Handler はメッセージを受信し、重複排除・フィルタリングを行って通知します。
 type Handler struct {
-	notifier    notifier.Notifier
-	notifyCodes map[int]struct{}
-	minScale    int
+	notifier             notifier.Notifier
+	notifyCodes          map[int]struct{}
+	minScale             int
+	immediateNotifyPrefs map[string]struct{}
 
 	mu      sync.Mutex
 	seenIDs []string // 直近 deduplicateCacheSize 件
@@ -26,17 +27,22 @@ type Handler struct {
 }
 
 // New は Handler を生成します。
-func New(n notifier.Notifier, notifyCodes []int, minScale int) *Handler {
+func New(n notifier.Notifier, notifyCodes []int, minScale int, immediateNotifyPrefs []string) *Handler {
 	codes := make(map[int]struct{}, len(notifyCodes))
 	for _, c := range notifyCodes {
 		codes[c] = struct{}{}
 	}
+	prefs := make(map[string]struct{}, len(immediateNotifyPrefs))
+	for _, pref := range immediateNotifyPrefs {
+		prefs[pref] = struct{}{}
+	}
 	return &Handler{
-		notifier:    n,
-		notifyCodes: codes,
-		minScale:    minScale,
-		seenIDs:     make([]string, 0, deduplicateCacheSize),
-		seenSet:     make(map[string]struct{}, deduplicateCacheSize),
+		notifier:             n,
+		notifyCodes:          codes,
+		minScale:             minScale,
+		immediateNotifyPrefs: prefs,
+		seenIDs:              make([]string, 0, deduplicateCacheSize),
+		seenSet:              make(map[string]struct{}, deduplicateCacheSize),
 	}
 }
 
@@ -122,8 +128,8 @@ func (h *Handler) formatJMAQuake(data []byte) (string, error) {
 	}
 	eq := q.Earthquake
 
-	// 震度フィルター
-	if eq.MaxScale < h.minScale {
+	// 対象都道府県で観測があれば、最小震度にかかわらず通知する。
+	if eq.MaxScale < h.minScale && !h.hasImmediateNotifyPref(q.Points) {
 		return "", nil
 	}
 
@@ -150,6 +156,15 @@ func (h *Handler) formatJMAQuake(data []byte) (string, error) {
 		tsunami,
 		eq.Time,
 	), nil
+}
+
+func (h *Handler) hasImmediateNotifyPref(points []model.Point) bool {
+	for _, point := range points {
+		if _, ok := h.immediateNotifyPrefs[point.Pref]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 func (h *Handler) formatJMATsunami(data []byte) (string, error) {
