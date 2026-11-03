@@ -6,6 +6,7 @@ websocket:
 filter:
   notify_codes: [551, 552, 556]
   min_scale: 30  # 0=全て, 10=震度1以上, 30=震度3以上, 40=震度4以上
+  immediate_notify_prefs: []  # 対象都道府県で観測があれば、min_scale未満でも地震情報を通知
 
 notifiers:
   - type: slack
