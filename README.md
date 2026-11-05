@@ -35,6 +35,7 @@ websocket:
 filter:
   notify_codes: [551, 552, 556]   # 551=地震情報, 552=津波情報, 556=緊急地震速報
   min_scale: 30                   # 0=全て, 10=震度1以上, 30=震度3以上, 40=震度4以上
+  immediate_notify_prefs: [東京都, 神奈川県]  # 対象都道府県で観測があれば、min_scale未満でも地震情報を通知
 
 notifiers:
   - type: slack
@@ -100,8 +101,11 @@ websocket:
 | `websocket.reconnect_max_interval` | `60s` | 再接続の最大待機時間 |
 | `filter.notify_codes` | `[551, 552, 556]` | 通知するイベントコード |
 | `filter.min_scale` | `0` | 通知する最小震度スケール値 |
+| `filter.immediate_notify_prefs` | `[]` | 対象都道府県で観測があれば、震度を問わず地震情報（551）を通知 |
 | `notifiers[].type` | — | `slack` または `discord` |
 | `notifiers[].url` | — | Webhook URL |
+
+`immediate_notify_prefs` はP2P地震情報の地震情報（551）に含まれる観測点の都道府県名（例: `東京都`）と照合します。一致する観測点がある場合は `min_scale` の条件を上書きして通知します。都道府県の指定がない場合や一致する観測点がない場合は、従来どおり `min_scale` で判定します。通知コードの設定は引き続き有効なため、`notify_codes` に `551` が含まれていない場合は通知されません。
 
 ### notify_codes の値
 

@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// ハンドラーを構築
-	h := handler.New(multi, cfg.Filter.NotifyCodes, cfg.Filter.MinScale)
+	h := handler.New(multi, cfg.Filter.NotifyCodes, cfg.Filter.MinScale, cfg.Filter.ImmediateNotifyPrefs)
 
 	// WebSocket クライアントを構築
 	wsClient := client.NewClient(

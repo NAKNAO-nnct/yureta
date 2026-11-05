@@ -17,15 +17,16 @@ type Config struct {
 
 // WebSocketConfig は WebSocket 接続の設定です。
 type WebSocketConfig struct {
-	URL                     string        `yaml:"url"`
+	URL                      string        `yaml:"url"`
 	ReconnectInitialInterval time.Duration `yaml:"reconnect_initial_interval"`
-	ReconnectMaxInterval    time.Duration `yaml:"reconnect_max_interval"`
+	ReconnectMaxInterval     time.Duration `yaml:"reconnect_max_interval"`
 }
 
 // FilterConfig は通知フィルターの設定です。
 type FilterConfig struct {
-	NotifyCodes []int `yaml:"notify_codes"`
-	MinScale    int   `yaml:"min_scale"`
+	NotifyCodes          []int    `yaml:"notify_codes"`
+	MinScale             int      `yaml:"min_scale"`
+	ImmediateNotifyPrefs []string `yaml:"immediate_notify_prefs"`
 }
 
 // NotifierConfig は各通知先の設定です。
